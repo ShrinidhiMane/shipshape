@@ -1,0 +1,86 @@
+# The "before" deployment: it works, and it's wide open.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: shop-db
+  namespace: shop
+stringData:
+  password: Sup3rS3cretPassw0rd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: shop}
+  template:
+    metadata:
+      labels: {app: shop}
+    spec:
+      hostNetwork: true
+      containers:
+        - name: shop
+          image: shop:latest
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
+          env:
+            - name: DB_PASSWORD
+              value: Sup3rS3cretPassw0rd
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            capabilities:
+              add: ["SYS_ADMIN", "NET_ADMIN"]
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  type: NodePort
+  selector: {app: shop}
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: shop-everything
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: shop-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: shop
+  - kind: Group
+    name: system:unauthenticated
+    apiGroup: rbac.authorization.k8s.io

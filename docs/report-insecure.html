@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop app, before</title>
+<style>
+:root { --bg:#f6f7f9; --panel:#fff; --ink:#15191f; --muted:#5d6675; --line:#e2e5ea;
+  --crit:#b3261e; --high:#d1452b; --med:#b26a00; --low:#2f6fb3; --ok:#1a7f37; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0e1116; --panel:#161b22; --ink:#e6edf3; --muted:#8d96a0;
+  --line:#2d333b; --crit:#ff6b61; --high:#ff8a65; --med:#e3a33a; --low:#6aa8ff; --ok:#46c25a; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:28px 16px 56px; }
+.top { display:flex; flex-wrap:wrap; gap:20px; align-items:center; margin-bottom:22px; }
+.grade { width:88px; height:88px; border-radius:50%; display:grid; place-items:center; font-size:40px; font-weight:750;
+  color:#fff; flex:none; }
+.g-a { background:var(--ok); } .g-b { background:#4d8f2a; } .g-c { background:var(--med); }
+.g-d { background:var(--high); } .g-f { background:var(--crit); }
+h1 { margin:0; font-size:24px; letter-spacing:-.01em; }
+.sub { color:var(--muted); }
+.counts { display:flex; gap:10px; margin-left:auto; flex-wrap:wrap; }
+.count { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 14px; min-width:84px; }
+.count b { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+.count span { font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+.count.critical b { color:var(--crit); } .count.high b { color:var(--high); }
+.count.medium b { color:var(--med); } .count.low b { color:var(--low); }
+.factors { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:26px; }
+.factor { display:flex; flex-direction:column; gap:2px; text-decoration:none; color:inherit; background:var(--panel);
+  border:1px solid var(--line); border-left:5px solid var(--ok); border-radius:10px; padding:10px 12px; }
+.factor.low { border-left-color:var(--low); } .factor.medium { border-left-color:var(--med); }
+.factor.high { border-left-color:var(--high); } .factor.critical { border-left-color:var(--crit); }
+.fn { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.ft { font-weight:650; } .fs { font-size:12px; color:var(--muted); }
+section { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:14px; }
+h2 { font-size:16px; margin:0 0 2px; display:flex; align-items:center; gap:10px; }
+.num { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--line); font-size:12px; }
+.blurb { color:var(--muted); margin:0 0 10px; }
+.none { color:var(--ok); margin:4px 0; }
+.tw { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th, td { text-align:left; vertical-align:top; padding:9px 8px; border-top:1px solid var(--line); }
+th { font-size:12px; font-weight:500; color:var(--muted); border-top:none; }
+.mono { font:12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.where { max-width:300px; word-break:break-word; }
+.loc { color:var(--muted); }
+.msg { margin-top:2px; } .fix { margin-top:4px; color:var(--muted); font-size:13px; }
+.sev { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  padding:2px 8px; border-radius:999px; color:#fff; }
+.sev.critical { background:var(--crit); } .sev.high { background:var(--high); }
+.sev.medium { background:var(--med); } .sev.low { background:var(--low); }
+footer { color:var(--muted); font-size:12px; margin-top:18px; }
+</style></head>
+<body><main>
+  <div class="top">
+    <div class="grade g-f">F</div>
+    <div>
+      <h1>Shop app, before</h1>
+      <div class="sub">Score 0/100 · 42 findings · 4 files ·
+        9 objects scanned · 2026-10-11 21:13</div>
+    </div>
+    <div class="counts"><div class="count critical"><b>8</b><span>critical</span></div><div class="count high"><b>15</b><span>high</span></div><div class="count medium"><b>12</b><span>medium</span></div><div class="count low"><b>7</b><span>low</span></div></div>
+  </div>
+  <div class="factors">
+        <a class="factor critical" href="#f1">
+          <span class="fn">Factor 1</span>
+          <span class="ft">Application code</span>
+          <span class="fs">Critical · 1 critical · 1 high</span>
+        </a>
+        <a class="factor high" href="#f2">
+          <span class="fn">Factor 2</span>
+          <span class="ft">Images</span>
+          <span class="fs">Serious · 5 high · 1 medium · 3 low</span>
+        </a>
+        <a class="factor critical" href="#f3">
+          <span class="fn">Factor 3</span>
+          <span class="ft">Host and container environment</span>
+          <span class="fs">Critical · 2 critical · 2 high · 5 medium</span>
+        </a>
+        <a class="factor critical" href="#f4">
+          <span class="fn">Factor 4</span>
+          <span class="ft">Applications in Kubernetes</span>
+          <span class="fs">Critical · 3 critical · 2 high · 4 medium · 2 low</span>
+        </a>
+        <a class="factor critical" href="#f5">
+          <span class="fn">Factor 5</span>
+          <span class="ft">Kubernetes cluster</span>
+          <span class="fs">Critical · 2 critical · 5 high · 1 medium · 1 low</span>
+        </a>
+        <a class="factor medium" href="#f6">
+          <span class="fn">Factor 6</span>
+          <span class="ft">Logging and monitoring</span>
+          <span class="fs">Needs work · 1 medium · 1 low</span>
+        </a></div>
+  
+      <section id="f1">
+        <h2><span class="num">1</span>Application code</h2>
+        <p class="blurb">Secrets and credentials in source and config files</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">SC002</td>
+            <td><b>AWS access key in a file</b><div class="msg">Looks like an AWS access key (AKIAIOSF…).</div><div class="fix">Fix: Deactivate the key in AWS now, then use IAM roles or a Secret instead of a hardcoded key.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/app/settings.py:4</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">SC003</td>
+            <td><b>Hardcoded password or token</b><div class="msg">&#x27;PASSWORD&#x27; is set to a literal value (Sup…, 19 chars).</div><div class="fix">Fix: Read it from an environment variable that&#x27;s filled from a Kubernetes Secret.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/app/settings.py:3</div></td>
+          </tr></tbody></table></div>
+      </section>
+      <section id="f2">
+        <h2><span class="num">2</span>Images</h2>
+        <p class="blurb">What goes into the image, and where it comes from</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">IMG001</td>
+            <td><b>Image has no fixed version (latest or no tag)</b><div class="msg">&#x27;python:latest&#x27; will pull whatever &#x27;latest&#x27; is at deploy time.</div><div class="fix">Fix: Use a specific tag like python:3.12-slim, so every deploy runs the image you tested.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:1</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">DF002</td>
+            <td><b>Secret baked into the image (ENV/ARG)</b><div class="msg">ENV DB_PASSWORD holds a value in the image.</div><div class="fix">Fix: Anyone who pulls the image can read ENV and ARG values. Pass secrets at runtime instead.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">DF004</td>
+            <td><b>Downloaded script piped straight into a shell</b><div class="msg">A downloaded script runs without being checked.</div><div class="fix">Fix: Download the file, check its checksum, then run it.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:4</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">DF001</td>
+            <td><b>Dockerfile runs the app as root</b><div class="msg">The final stage has no USER, so the app runs as root.</div><div class="fix">Fix: Create a user (RUN useradd -u 10001 app) and switch to it with USER 10001 at the end.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:7</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">IMG001</td>
+            <td><b>Image has no fixed version (latest or no tag)</b><div class="msg">&#x27;shop:latest&#x27; will pull whatever &#x27;latest&#x27; is at deploy time.</div><div class="fix">Fix: Use a specific tag like python:3.12-slim, so every deploy runs the image you tested.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">DF003</td>
+            <td><b>ADD downloads from a URL</b><div class="msg">ADD fetches a remote file with no integrity check.</div><div class="fix">Fix: Use COPY for local files, or RUN curl with a checksum check for downloads.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:3</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">IMG002</td>
+            <td><b>Image not pinned by digest</b><div class="msg">&#x27;python:latest&#x27; is referenced by tag only.</div><div class="fix">Fix: Add @sha256:... after the tag. A tag can be moved to a different image; a digest can&#x27;t.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:1</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">DF005</td>
+            <td><b>No HEALTHCHECK in the Dockerfile</b><div class="msg">No HEALTHCHECK instruction.</div><div class="fix">Fix: Add a HEALTHCHECK for plain Docker. On Kubernetes, probes do this job instead.</div></td>
+            <td class="mono where"><div class="loc">examples/insecure/Dockerfile:7</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">IMG002</td>
+            <td><b>Image not pinned by digest</b><div class="msg">&#x27;shop:latest&#x27; is referenced by tag only.</div><div class="fix">Fix: Add @sha256:... after the tag. A tag can be moved to a different image; a digest can&#x27;t.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr></tbody></table></div>
+      </section>
+      <section id="f3">
+        <h2><span class="num">3</span>Host and container environment</h2>
+        <p class="blurb">What a container can do to the node it runs on</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">K8S002</td>
+            <td><b>Shares the node&#x27;s network, process or IPC namespace</b><div class="msg">hostNetwork is set to true.</div><div class="fix">Fix: Remove hostNetwork / hostPID / hostIPC. The pod can see and touch everything on the node.</div></td>
+            <td class="mono where">Deployment/shop<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">K8S001</td>
+            <td><b>Privileged container</b><div class="msg">privileged: true</div><div class="fix">Fix: Remove privileged: true. A privileged container is effectively root on the node.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">K8S003</td>
+            <td><b>Mounts a folder from the node (hostPath)</b><div class="msg">Volume &#x27;docker-sock&#x27; mounts /var/run/docker.sock from the node.</div><div class="fix">Fix: Use a PersistentVolumeClaim, ConfigMap or emptyDir instead of a hostPath volume.</div></td>
+            <td class="mono where">Deployment/shop<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">K8S005</td>
+            <td><b>Adds a dangerous Linux capability</b><div class="msg">Adds NET_ADMIN, SYS_ADMIN.</div><div class="fix">Fix: Remove it from capabilities.add. Most apps need no extra capabilities.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S006</td>
+            <td><b>Doesn&#x27;t drop all Linux capabilities</b><div class="msg">capabilities.drop doesn&#x27;t include ALL.</div><div class="fix">Fix: Set securityContext.capabilities.drop: [&quot;ALL&quot;], then add back only what&#x27;s needed.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S007</td>
+            <td><b>Root filesystem is writable</b><div class="msg">readOnlyRootFilesystem is not true.</div><div class="fix">Fix: Set readOnlyRootFilesystem: true and mount an emptyDir where the app needs to write.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S008</td>
+            <td><b>No seccomp profile</b><div class="msg">No RuntimeDefault or Localhost seccomp profile.</div><div class="fix">Fix: Set securityContext.seccompProfile.type: RuntimeDefault on the pod.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S009</td>
+            <td><b>No CPU or memory limit</b><div class="msg">No cpu or memory limit.</div><div class="fix">Fix: Set resources.limits so one container can&#x27;t starve everything else on the node.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S010</td>
+            <td><b>Opens a port directly on the node (hostPort)</b><div class="msg">hostPort 8080.</div><div class="fix">Fix: Remove hostPort and expose the pod through a Service.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr></tbody></table></div>
+      </section>
+      <section id="f4">
+        <h2><span class="num">4</span>Applications in Kubernetes</h2>
+        <p class="blurb">Identity, access, secrets and network rules for workloads</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">RBAC001</td>
+            <td><b>Role allows everything (* on *)</b><div class="msg">verbs: [&#x27;*&#x27;] on resources: [&#x27;*&#x27;].</div><div class="fix">Fix: List only the resources and verbs the subject actually needs.</div></td>
+            <td class="mono where">ClusterRole/shop-everything (rule 1)<div class="loc">examples/insecure/k8s/shop.yaml:63</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">RBAC005</td>
+            <td><b>Binding grants cluster-admin</b><div class="msg">Gives cluster-admin to ServiceAccount default, Group system:unauthenticated.</div><div class="fix">Fix: Bind a narrower role. cluster-admin can do anything in every namespace.</div></td>
+            <td class="mono where">ClusterRoleBinding/shop-admin<div class="loc">examples/insecure/k8s/shop.yaml:72</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">RBAC006</td>
+            <td><b>Binding grants access to anonymous or all users</b><div class="msg">Subjects include system:unauthenticated.</div><div class="fix">Fix: Remove system:anonymous, system:unauthenticated and system:authenticated from the subjects.</div></td>
+            <td class="mono where">ClusterRoleBinding/shop-admin<div class="loc">examples/insecure/k8s/shop.yaml:72</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">K8S011</td>
+            <td><b>Container may run as root</b><div class="msg">runAsUser is 0 (root).</div><div class="fix">Fix: Set runAsNonRoot: true and a non-zero runAsUser in the pod&#x27;s securityContext.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">K8S013</td>
+            <td><b>Secret written as a plain env value</b><div class="msg">env DB_PASSWORD has its value written in the manifest.</div><div class="fix">Fix: Use valueFrom.secretKeyRef so the value lives in a Secret, not in the manifest.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S015</td>
+            <td><b>Namespace doesn&#x27;t enforce a Pod Security Standard</b><div class="msg">No pod-security.kubernetes.io/enforce label.</div><div class="fix">Fix: Add the label pod-security.kubernetes.io/enforce: restricted (or baseline) to the namespace.</div></td>
+            <td class="mono where">Namespace/shop<div class="loc">examples/insecure/k8s/shop.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S014</td>
+            <td><b>Secret with real values stored in a file</b><div class="msg">Holds values for: password.</div><div class="fix">Fix: Don&#x27;t commit Secrets. Create them with kubectl, or use Sealed Secrets or an external secret store.</div></td>
+            <td class="mono where">Secret/shop-db<div class="loc">examples/insecure/k8s/shop.yaml:7</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S012</td>
+            <td><b>Service account token mounted into the pod</b><div class="msg">automountServiceAccountToken is not false.</div><div class="fix">Fix: Set automountServiceAccountToken: false unless the app really calls the Kubernetes API.</div></td>
+            <td class="mono where">Deployment/shop<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">K8S016</td>
+            <td><b>No NetworkPolicy for this namespace</b><div class="msg">Workloads run in &#x27;shop&#x27;, but no NetworkPolicy was found for it.</div><div class="fix">Fix: Add a NetworkPolicy so only the pods that need to talk to each other can.</div></td>
+            <td class="mono where">Namespace/shop<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">K8S018</td>
+            <td><b>Runs as the namespace&#x27;s default service account</b><div class="msg">No serviceAccountName, so it uses &#x27;default&#x27;.</div><div class="fix">Fix: Give the workload its own service account, so its permissions can be limited on their own.</div></td>
+            <td class="mono where">Deployment/shop<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">K8S017</td>
+            <td><b>Service reachable from outside the cluster</b><div class="msg">type: NodePort</div><div class="fix">Fix: Check that this should be public. If not, use type: ClusterIP.</div></td>
+            <td class="mono where">Service/shop<div class="loc">examples/insecure/k8s/shop.yaml:51</div></td>
+          </tr></tbody></table></div>
+      </section>
+      <section id="f5">
+        <h2><span class="num">5</span>Kubernetes cluster</h2>
+        <p class="blurb">Control plane settings: API server, etcd, admission</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">CL002</td>
+            <td><b>API server authorization is too open</b><div class="msg">--authorization-mode=AlwaysAllow</div><div class="fix">Fix: Use --authorization-mode=Node,RBAC and never AlwaysAllow.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev critical">critical</span></td>
+            <td class="mono">CL003</td>
+            <td><b>API server has an unencrypted, unauthenticated port</b><div class="msg">An insecure port is configured.</div><div class="fix">Fix: Remove --insecure-port / --insecure-bind-address (or set --insecure-port=0).</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">CL001</td>
+            <td><b>API server accepts anonymous requests</b><div class="msg">--anonymous-auth is not set to false (the default is true).</div><div class="fix">Fix: Start kube-apiserver with --anonymous-auth=false.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">CL004</td>
+            <td><b>NodeRestriction admission plugin is off</b><div class="msg">NodeRestriction is not in --enable-admission-plugins.</div><div class="fix">Fix: Add NodeRestriction to --enable-admission-plugins, so a node can only change its own objects.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">CL008</td>
+            <td><b>API server has no TLS certificate set</b><div class="msg">No --tls-cert-file.</div><div class="fix">Fix: Set --tls-cert-file and --tls-private-key-file so all API traffic is encrypted.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">CL009</td>
+            <td><b>etcd doesn&#x27;t require client certificates</b><div class="msg">Not true: --client-cert-auth, --peer-client-cert-auth.</div><div class="fix">Fix: Start etcd with --client-cert-auth=true and --peer-client-cert-auth=true.</div></td>
+            <td class="mono where">Pod/etcd (etcd)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:19</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev high">high</span></td>
+            <td class="mono">CL010</td>
+            <td><b>etcd traffic isn&#x27;t encrypted</b><div class="msg">No --cert-file.</div><div class="fix">Fix: Set --cert-file/--key-file (and --peer-cert-file/--peer-key-file) on etcd.</div></td>
+            <td class="mono where">Pod/etcd (etcd)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:19</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">CL005</td>
+            <td><b>Secrets aren&#x27;t encrypted at rest in etcd</b><div class="msg">No --encryption-provider-config.</div><div class="fix">Fix: Pass --encryption-provider-config with an aescbc, secretbox or KMS provider.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">CL006</td>
+            <td><b>Profiling endpoint is on</b><div class="msg">--profiling is not false.</div><div class="fix">Fix: Add --profiling=false to the control-plane component.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr></tbody></table></div>
+      </section>
+      <section id="f6">
+        <h2><span class="num">6</span>Logging and monitoring</h2>
+        <p class="blurb">Being able to see problems: probes and audit logs</p>
+        <div class="tw"><table><thead><tr><th>Severity</th><th>Rule</th><th>Finding</th><th>Where</th></tr></thead><tbody>
+          <tr>
+            <td><span class="sev medium">medium</span></td>
+            <td class="mono">CL007</td>
+            <td><b>API server audit logging is off</b><div class="msg">No --audit-log-path.</div><div class="fix">Fix: Set --audit-log-path and --audit-policy-file so you can see who did what in the cluster.</div></td>
+            <td class="mono where">Pod/kube-apiserver (kube-apiserver)<div class="loc">examples/insecure/cluster/kube-apiserver.yaml:2</div></td>
+          </tr>
+          <tr>
+            <td><span class="sev low">low</span></td>
+            <td class="mono">MON001</td>
+            <td><b>No health probes</b><div class="msg">No livenessProbe or readinessProbe.</div><div class="fix">Fix: Add a readinessProbe and a livenessProbe, so Kubernetes notices (and fixes) a broken container.</div></td>
+            <td class="mono where">Deployment/shop (container shop)<div class="loc">examples/insecure/k8s/shop.yaml:15</div></td>
+          </tr></tbody></table></div>
+      </section>
+  
+  <footer>Shipshape 1.0.0. Checks follow the five-factor model: code, images, host and container
+    environment, applications in Kubernetes, and the cluster, plus logging and monitoring.</footer>
+</main></body></html>

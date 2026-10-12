@@ -1,0 +1,133 @@
+# The "after" deployment: same app, every finding from the "before" version fixed.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted
+---
+# No Secret in Git. It's created at deploy time:
+#   kubectl -n shop create secret generic shop-db --from-literal=password="$(openssl rand -hex 16)"
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shop
+  namespace: shop
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: shop}
+  template:
+    metadata:
+      labels: {app: shop}
+    spec:
+      serviceAccountName: shop
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: shop
+          image: registry.example.com/shop:1.4.2@sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: shop-db, key: password}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 128Mi}
+          readinessProbe:
+            httpGet: {path: /, port: 8080}
+          livenessProbe:
+            tcpSocket: {port: 8080}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  type: ClusterIP
+  selector: {app: shop}
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Deny everything by default, then allow only what's needed.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: shop
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: shop-allow-web-and-db
+  namespace: shop
+spec:
+  podSelector:
+    matchLabels: {app: shop}
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress}
+      ports: [{port: 8080}]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {app: db}
+      ports: [{port: 5432}]
+    - ports: [{port: 53, protocol: UDP}]  # DNS
+---
+# The shop only reads its own ConfigMap: no wildcards, no Secrets, no cluster-wide access.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: shop-read-config
+  namespace: shop
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["shop-config"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: shop-read-config
+  namespace: shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: shop-read-config
+subjects:
+  - kind: ServiceAccount
+    name: shop
+    namespace: shop

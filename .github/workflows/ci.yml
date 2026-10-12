@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev]"
+      - run: ruff check . && ruff format --check .
+      - run: pytest -q
+
+  # Shipshape used the way it's meant to be used: as a gate in a pipeline.
+  security-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install .
+      - name: The hardened example must pass with zero findings
+        run: shipshape scan examples/hardened --fail-on low
+      - name: The insecure example must be blocked
+        run: |
+          if shipshape scan examples/insecure --fail-on high > /dev/null; then
+            echo "expected the insecure example to fail the gate"; exit 1
+          fi
+          echo "insecure example correctly blocked"
+      - name: HTML report as a build artifact
+        run: shipshape scan examples/insecure --format html -o report.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shipshape-report
+          path: report.html

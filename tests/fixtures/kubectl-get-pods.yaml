@@ -1,0 +1,99 @@
+# Trimmed output of `kubectl get pods -n kube-system -o yaml` on a fresh minikube
+# cluster: the control-plane static pods plus kube-proxy and CoreDNS.
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kube-apiserver-minikube
+      namespace: kube-system
+      labels: {component: kube-apiserver, tier: control-plane}
+    spec:
+      hostNetwork: true
+      containers:
+        - name: kube-apiserver
+          image: registry.k8s.io/kube-apiserver:v1.31.0
+          command:
+            - kube-apiserver
+            - --advertise-address=192.168.49.2
+            - --allow-privileged=true
+            - --authorization-mode=Node,RBAC
+            - --client-ca-file=/var/lib/minikube/certs/ca.crt
+            - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+            - --enable-bootstrap-token-auth=true
+            - --etcd-cafile=/var/lib/minikube/certs/etcd/ca.crt
+            - --etcd-certfile=/var/lib/minikube/certs/apiserver-etcd-client.crt
+            - --etcd-keyfile=/var/lib/minikube/certs/apiserver-etcd-client.key
+            - --etcd-servers=https://127.0.0.1:2379
+            - --secure-port=8443
+            - --service-account-issuer=https://kubernetes.default.svc.cluster.local
+            - --service-cluster-ip-range=10.96.0.0/12
+            - --tls-cert-file=/var/lib/minikube/certs/apiserver.crt
+            - --tls-private-key-file=/var/lib/minikube/certs/apiserver.key
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: etcd-minikube
+      namespace: kube-system
+      labels: {component: etcd, tier: control-plane}
+    spec:
+      hostNetwork: true
+      containers:
+        - name: etcd
+          image: registry.k8s.io/etcd:3.5.15-0
+          command:
+            - etcd
+            - --advertise-client-urls=https://192.168.49.2:2379
+            - --cert-file=/var/lib/minikube/certs/etcd/server.crt
+            - --client-cert-auth=true
+            - --data-dir=/var/lib/minikube/etcd
+            - --key-file=/var/lib/minikube/certs/etcd/server.key
+            - --peer-cert-file=/var/lib/minikube/certs/etcd/peer.crt
+            - --peer-client-cert-auth=true
+            - --peer-key-file=/var/lib/minikube/certs/etcd/peer.key
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kube-proxy-x7k2p
+      namespace: kube-system
+      labels: {k8s-app: kube-proxy}
+    spec:
+      hostNetwork: true
+      serviceAccountName: kube-proxy
+      containers:
+        - name: kube-proxy
+          image: registry.k8s.io/kube-proxy:v1.31.0
+          command: [/usr/local/bin/kube-proxy, --config=/var/lib/kube-proxy/config.conf]
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - {name: lib-modules, mountPath: /lib/modules, readOnly: true}
+      volumes:
+        - name: lib-modules
+          hostPath: {path: /lib/modules}
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: coredns-6f6b679f8f-4tq9z
+      namespace: kube-system
+      labels: {k8s-app: kube-dns}
+    spec:
+      serviceAccountName: coredns
+      containers:
+        - name: coredns
+          image: registry.k8s.io/coredns/coredns:v1.11.1
+          args: [-conf, /etc/coredns/Corefile]
+          resources:
+            limits: {memory: 170Mi}
+            requests: {cpu: 100m, memory: 70Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: [NET_BIND_SERVICE]
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+          livenessProbe:
+            httpGet: {path: /health, port: 8080}
+          readinessProbe:
+            httpGet: {path: /ready, port: 8181}
